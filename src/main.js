@@ -1,122 +1,89 @@
 import kaboom from "kaboom"
 
-// 1. Setup
 kaboom({
-    background: [20, 20, 40], // Dark "vibe" background
+  background: [8, 8, 18],
 })
 
-// 2. Load built-in assets
-loadBean()
-
-// --- SCENE: TITLE SCREEN ---
+// ─── TITLE SCREEN ────────────────────────────────────────────────────────────
 scene("title", () => {
-    add([
-        text("HELLO WORLD GAME", { size: 48 }),
-        pos(center()),
-        anchor("center"),
-    ])
 
-    // Start Button
-    const startBtn = add([
-        rect(200, 50, { radius: 8 }),
-        pos(center().x, center().y + 80),
-        color(0, 255, 100),
-        anchor("center"),
-        area(),
-    ])
+  add([
+    text("GAME TITLE", { size: 64 }),
+    pos(center().x, center().y - 120),
+    anchor("center"),
+    color(200, 160, 255),
+  ])
 
-    startBtn.add([
-        text("START", { size: 24 }),
-        anchor("center"),
-        color(0, 0, 0),
-    ])
+  // PLAY button
+  const playBtn = add([
+    rect(200, 60, { radius: 6 }),
+    pos(center().x, center().y + 20),
+    anchor("center"),
+    color(80, 40, 180),
+    area(),
+  ])
+  add([
+    text("PLAY", { size: 28 }),
+    pos(center().x, center().y + 20),
+    anchor("center"),
+    color(255, 255, 255),
+  ])
 
-    // Quit Button
-    const quitBtn = add([
-        rect(200, 50, { radius: 8 }),
-        pos(center().x, center().y + 150),
-        color(255, 50, 50),
-        anchor("center"),
-        area(),
-    ])
+  // QUIT button
+  const quitBtn = add([
+    rect(200, 60, { radius: 6 }),
+    pos(center().x, center().y + 110),
+    anchor("center"),
+    color(80, 20, 20),
+    area(),
+  ])
+  add([
+    text("QUIT", { size: 28 }),
+    pos(center().x, center().y + 110),
+    anchor("center"),
+    color(255, 255, 255),
+  ])
 
-    quitBtn.add([
-        text("QUIT", { size: 24 }),
-        anchor("center"),
-        color(0, 0, 0),
-    ])
+  playBtn.onClick(() => go("level1"))
+  quitBtn.onClick(() => {
+    if (confirm("Quit game?")) window.close()
+  })
 
-    // Button Logic
-    startBtn.onClick(() => go("game"))
-    
-    // In Web Games, "Quit" usually just refreshes or clears the screen
-    quitBtn.onClick(() => {
-        if(confirm("Close game?")) window.close();
-    })
-    
-    // Visual "Vibe": Make the title bounce
-    onUpdate(() => {
-        startBtn.scale = wave(1, 1.1, time() * 5)
-    })
+  onKeyPress("enter", () => go("level1"))
+
+  add([
+    text("press ENTER to start", { size: 16 }),
+    pos(center().x, height() - 40),
+    anchor("center"),
+    color(100, 90, 140),
+  ])
 })
 
-// --- SCENE: GAME LEVEL ---
-scene("game", () => {
-    setGravity(1600)
+// ─── LEVEL 1 PLACEHOLDER ─────────────────────────────────────────────────────
+scene("level1", () => {
 
-    // A simple level map
-    const map = addLevel([
-        "                        ",
-        "      ?                 ",
-        "                        ",
-        "           $$           ",
-        "========================",
-    ], {
-        tileWidth: 64,
-        tileHeight: 64,
-        tiles: {
-            "=": () => [
-                rect(64, 64), 
-                color(100, 100, 200), 
-                area(), 
-                body({ isStatic: true }),
-                "ground"
-            ],
-            "$": () => [
-                circle(12), 
-                color(255, 255, 0), 
-                area(), 
-                "coin"
-            ],
-        }
-    })
+  add([
+    text("LEVEL 1", { size: 64 }),
+    pos(center().x, center().y - 40),
+    anchor("center"),
+    color(200, 160, 255),
+  ])
 
-    // Player
-    const player = add([
-        sprite("bean"),
-        pos(100, 0),
-        area(),
-        body(),
-    ])
+  add([
+    text("hello world", { size: 32 }),
+    pos(center().x, center().y + 40),
+    anchor("center"),
+    color(160, 140, 200),
+  ])
 
-    // Controls
-    onKeyDown("left", () => player.move(-400, 0))
-    onKeyDown("right", () => player.move(400, 0))
-    onKeyPress("space", () => {
-        if (player.isGrounded()) player.jump()
-    })
+  add([
+    text("ESC to return to menu", { size: 18 }),
+    pos(center().x, height() - 40),
+    anchor("center"),
+    color(100, 90, 140),
+  ])
 
-    // Gameplay Logic
-    player.onCollide("coin", (coin) => {
-        destroy(coin)
-        shake(2) // Tiny screen shake for "juice"
-    })
-
-    // Fall off map = Reset
-    player.onUpdate(() => {
-        if (player.pos.y > height()) go("title")
-    })
+  onKeyPress("escape", () => go("title"))
 })
 
-// Start the game at the title screen
 go("title")
